@@ -25,8 +25,6 @@ connection.connect(() => {
   runChoice();
 });
 
-// module.exports = connection;
-
 // Function that gives the user the choice of action
 const runChoice = () => {
   inquirer
@@ -42,37 +40,38 @@ const runChoice = () => {
         "Add role",
         "View departments",
         "Add department",
+        "Done",
       ],
     })
     .then((answer) => {
-      switch (answer.action) {
+      switch (answer.choice) {
         case "View employees":
-          showEmployees();
-          break;
+          return showEmployees();
 
         case "Add employee":
-          addEmployee();
-          break;
+          return addEmployee();
 
         case "Update employee role":
-          updateEmpRole();
-          break;
+          return updateEmpRole();
 
         case "View roles":
-          showRoles();
-          break;
+          return showRoles();
 
         case "Add role":
-          addRole();
-          break;
+          return addRole();
 
         case "View departments":
-          showDepartments();
-          break;
+          return showDepartments();
 
         case "Add department":
-          addDepartment();
-          break;
+          return addDepartment();
+        
+        case "Done":
+          return done();
+
+        default:
+          console.log(`Invalid action: ${answer.action}`);
+          break;  
       }
     });
 };
@@ -104,4 +103,10 @@ const showDepartments = () => {
 const addDepartment = () => {
 
 };
+
+const done = () => {
+  console.log("Done!");
+  process.exit(); 
+}
+
 
