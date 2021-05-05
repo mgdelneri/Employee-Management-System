@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
   host: "localhost",
 
   // Establishing port
-  port: process.env.PORT || 8080,
+  port: 3306,
 
   // Username
   user: "root",
@@ -19,8 +19,9 @@ const connection = mysql.createConnection({
 });
 
 // Either show an error or run the runChoice function, which initiates the inquirer prompts
-connection.connect(() => {
-  // if (err) throw err;
+connection.connect((err) => {
+  if (err) throw (err);
+  console.log(err);
   console.log("Successful connection!");
   runChoice();
 });
@@ -70,17 +71,76 @@ const runChoice = () => {
           return done();
 
         default:
-          console.log(`Invalid action: ${answer.action}`);
+          console.log(`Invalid action: ${answer.choice}`);
           break;  
       }
     });
 };
 
 const showEmployees = () => {
-
-};
+  let query = "SELECT employee.employee_id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.role_id LEFT JOIN department ON role.department_id = department.department_id LEFT JOIN employee manager ON manager.role_id = employee.manager_id";
+  connection.query(query, (err, employees) => {
+    console.log(err);
+    if (err) throw (err);
+    console.log(employees);
+    console.log("\n");
+    console.table("Employees", employees); 
+    runChoice(); 
+  });
+}
 
 const addEmployee = () => {
+  inquirer
+    prompt(
+      {
+        name: "newEmpFirstName",
+        type: "input",
+        message: "What is the employee's first name?"
+      },
+      {
+        name: "newEmpLastName",
+        type: "input",
+        message: "What is the employee's last name?"
+      },
+      {
+        name: "newEmpRole",
+        type: "list",
+        message: "What is the employee's role?",
+        choice: [
+          "Lead Engineer",
+          "Software Engineer",
+          "Sales Lead",
+          "Salesperson",
+          "Accountant Manager",
+          "Accountant",
+          "Legal Team Lead",
+          "Lawyer"
+        ]
+      },
+      {
+        name: "newEmpManager",
+        type: "list",
+        message: "Who is the employee's manager?",
+        choice: [
+          "Janelle Monae",
+          "Marisa Monte",
+          "Elis Regina",
+          "Beyonce Knowles"
+        ]
+      }
+    )
+    /*.then((answer) => {
+        const newEmpQuery = 'INSERT INTO employee (first_name, last_name) VALUES ?';
+        connection.query(newEmpQuery, { employee: answer.employee }, (err, res) => {
+          res.forEach(({ first_name, last_name }) => {
+            console.log(
+              `Employee: ${} || Song: ${song} || Year: ${year}`
+            );
+          });
+          runSearch();
+        });
+  
+    })*/
 
 };
 
